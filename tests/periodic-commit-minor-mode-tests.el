@@ -35,7 +35,7 @@ Returns the path to the directory."
         (delete-file test-metafile)))
 
   (after-all
-    (delete-directory test-dir))
+    (delete-directory test-dir t))
 
   (it "attempt to commit an untracked file"
     (expect 'pcmm-commit :to-throw)))
@@ -52,7 +52,7 @@ Returns the path to the directory."
     (setq test-buf (find-file-noselect test-filename)))
 
   (after-all
-    (delete-directory test-dir))
+    (delete-directory test-dir t))
 
   (it "attempt to commit an untracked file"
     (expect 'pcmm-commit :to-throw))
