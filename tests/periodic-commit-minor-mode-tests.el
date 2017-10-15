@@ -37,7 +37,7 @@ Returns the path to the directory."
   (after-all
     (delete-directory test-dir t))
 
-  (it "attempt to commit an untracked file"
+  (it "commit an untracked file"
     (expect 'pcmm-commit :to-throw)))
 
 (describe "From an initialized repository"
@@ -54,18 +54,15 @@ Returns the path to the directory."
   (after-all
     (delete-directory test-dir t))
 
-  (it "attempt to commit an untracked file"
+  (it "commit an untracked file"
     (expect 'pcmm-commit :to-throw))
 
-  (it "attempt to commit a tracked file with no changes"
+  (it "commit a tracked file with no changes"
     (expect
      (lambda ()
        (magit-stage-modified t)
        (pcmm--commit))
-     :to-throw))
-
-  (it "do nothing"
-    (expect t :to-equal t)))
+     :to-throw)))
 
 (provide 'periodic-commit-minor-mode-tests)
 ;;; periodic-commit-minor-mode-tests.el ends here
