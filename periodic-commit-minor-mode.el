@@ -163,7 +163,7 @@ be refreshed, no matter what."
 
 When this mode is activated in one or more buffers belonging to a VCS
 repository, periodically commit all changes to it."
-  :lighter "P.Comm"
+  :lighter " P.Comm"
   (cond (periodic-commit-minor-mode
          (add-hook 'after-save-hook 'pcmm-handle-save nil t))
         (t
