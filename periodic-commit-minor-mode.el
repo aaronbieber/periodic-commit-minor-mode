@@ -144,11 +144,13 @@ than `pcmm-commit-frequency' seconds ago.
 If FORCE is not nil, a commit will be made and the interval time will
 be refreshed, no matter what."
   (interactive)
-  (cond ((or (not (buffer-file-name))
-             (not (magit-file-tracked-p (buffer-file-name))))
-         (error "Periodic Commit can only work on a saved file in a Git repository"))
-        ((= 0 (length (magit-unstaged-files)))
-         (message "There are no changes to commit"))
+  (if (not (buffer-file-name))
+      (error "Periodic Commit cannot commit a file with no filename!"))
+  (if (and (not pcmm-commit-all)
+           (not (magit-file-tracked-p (buffer-file-name))))
+      (error "Current file is not staged and pcmm-commit-all is not enabled!"))
+  (cond ((= 0 (length (magit-unstaged-files)))
+         (message "There are no changes to commit."))
         (t
          (if (or force (pcmm--commit-overdue-p))
              (progn
