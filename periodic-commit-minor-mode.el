@@ -74,7 +74,7 @@ be committed no matter what)."
 
 (defun pcmm--commit-overdue-p ()
   "Are we due for a commit in this repository?"
-  (> (- (string-to-int (format-time-string "%s"))
+  (> (- (string-to-number (format-time-string "%s"))
         (pcmm--get-log))
      pcmm-commit-frequency))
 
@@ -87,7 +87,7 @@ be committed no matter what)."
           (insert (format-time-string "%s"))
         (insert "0"))
       (write-region (point-min) (point-max) file nil 0)
-      (string-to-int (buffer-substring (point-min) (point-max))))))
+      (string-to-number (buffer-substring (point-min) (point-max))))))
 
 (defun pcmm--read-log (file)
   "Read and return the contents of FILE."
@@ -95,7 +95,7 @@ be committed no matter what)."
     (with-current-buffer buf
       (erase-buffer)
       (insert-file-contents file)
-      (string-to-int (buffer-substring (point-min) (point-max))))))
+      (string-to-number (buffer-substring (point-min) (point-max))))))
 
 (defun pcmm--log-file-p (file)
   "Locate the pcmm log file FILE, return nil if it doesn't exist."
