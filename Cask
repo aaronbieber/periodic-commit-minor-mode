@@ -7,4 +7,4 @@
 (depends-on "vc")
 
 (development
- (depends-on "buttercup"))
+ (depends-on "ert-runner"))
