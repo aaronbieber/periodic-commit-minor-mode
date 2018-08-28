@@ -23,7 +23,8 @@
   (let* ((test-dir (expand-file-name name temporary-file-directory))
          (buf (get-buffer-create "*vc-git-output*")))
     (make-directory test-dir)
-    (if init (vc-git-command buf nil test-dir "init"))
+    (cd test-dir)
+    (if init (vc-git-command buf 0 nil "init"))
     test-dir))
 
 (defun pcmmt-delete-proj (name)
@@ -33,6 +34,12 @@
       (if (file-exists-p test-dir)
           (delete-directory test-dir t)))))
 
+(defmacro with-buffer-visiting-then-kill (filename &rest body)
+  "Read FILENAME into a buffer, execute BODY, then kill the buffer."
+  `(let ((buf (find-file-noselect ,filename t)))
+       (with-current-buffer buf ,@body)
+         (kill-buffer buf)))
+
 (defmacro with-proj (name init &rest forms)
   "Create dir NAME, optionally INIT as a Git repo, and evaluate FORMS.
 
@@ -40,11 +47,18 @@ This macro ensures that the directory created is always destroyed,
 even if FORMS results in errors."
   `(unwind-protect
        (let* ((pcmmt-dir (pcmmt-create-proj ,name ,init))
-              (pcmmt-file (expand-file-name ,name pcmmt-dir))
+              (pcmmt-file (expand-file-name (concat ,name "-file.txt") pcmmt-dir))
               (pcmmt-metafile (expand-file-name ".pcmm" pcmmt-dir)))
          ,@forms
          pcmmt-dir)
      (pcmmt-delete-proj ,name)))
+
+(defun forge-log (filename offset)
+  "Write the current time plus OFFSET to FILENAME."
+  (let* ((current-time (string-to-number (format-time-string "%s")))
+         (offset-time (+ current-time offset))
+         (buf (get-buffer-create "*test*")))
+    (write-region (number-to-string offset-time) nil filename)))
 
 (provide 'test-helper)
 ;;; test-helper.el ends here

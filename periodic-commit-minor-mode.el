@@ -153,19 +153,20 @@ with the auto-generated commit message without waiting for the
   "Commit all changed files after some interval.
 
 A commit will be made if this function is called from a buffer that is
-visiting a file that is already part of a Git repository and this
-function has never been called before, or it was last called longer
-than `pcmm-commit-frequency' seconds ago.
+visiting a file that is within a Git repository and this function has
+never been called before, or it was last called longer than
+`pcmm-commit-frequency' seconds ago.
 
 If FORCE is not nil, a commit will be made and the interval time will
-be refreshed, no matter what."
+be refreshed no matter what."
   (interactive)
   (if (not (buffer-file-name))
       (error "Periodic Commit cannot commit a file with no filename!"))
   (if (and (not pcmm-commit-all)
            (not (magit-file-tracked-p (buffer-file-name))))
       (error "Current file is not staged and pcmm-commit-all is not enabled!"))
-  (cond ((= 0 (length (magit-unstaged-files)))
+  (cond ((and (= 0 (length (magit-untracked-files)))
+              (= 0 (length (magit-unstaged-files))))
          (message "There are no changes to commit."))
         (t
          (if (or force (pcmm--commit-overdue-p))
@@ -173,7 +174,8 @@ be refreshed, no matter what."
                (magit-stage-modified pcmm-commit-all)
                (magit-commit (list "-m" (pcmm--make-commit-message)))
                (pcmm--update-log)
-               (message "Automatically committed."))))))
+               (message "Automatically committed.")
+               t)))))
 
 ;;;###autoload
 (define-minor-mode periodic-commit-minor-mode

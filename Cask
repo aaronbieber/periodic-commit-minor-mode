@@ -1,5 +1,5 @@
 (source gnu)
-(source melpa-stable)
+(source melpa)
 
 (package "periodic-commit-minor-mode" "0.0.1" "Periodic Commit Minor Mode")
 
