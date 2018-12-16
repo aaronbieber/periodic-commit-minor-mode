@@ -44,16 +44,11 @@
               (save-buffer)
               (setq pcmm-commit-frequency 100)
               (forge-log pcmmt-metafile 0)
-              (should (not (pcmm--commit))))
+              (should (equal nil (pcmm--commit)))
 
-             (with-buffer-visiting-then-kill
-              pcmmt-file
-              (goto-char (point-max))
-              (insert "new changes")
-              (save-buffer)
               (setq pcmm-commit-frequency 100)
               (forge-log pcmmt-metafile -200)
-              (should (pcmm--commit)))))
+              (should (equal t (pcmm--commit))))))
 
 (provide 'periodic-commit-minor-mode-test)
 ;;; periodic-commit-minor-mode-test.el ends here
