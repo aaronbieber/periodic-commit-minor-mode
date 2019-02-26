@@ -172,7 +172,7 @@ be refreshed no matter what."
          (if (or force (pcmm--commit-overdue-p))
              (progn
                (magit-stage-modified pcmm-commit-all)
-               (magit-commit (list "-m" (pcmm--make-commit-message)))
+               (vc-git-command nil 0 nil "commit" "-m" (pcmm--make-commit-message))
                (pcmm--update-log)
                (message "Automatically committed.")
                t)))))
