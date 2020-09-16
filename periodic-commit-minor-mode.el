@@ -165,8 +165,9 @@ be refreshed no matter what."
   (if (and (not pcmm-commit-all)
            (not (vc-state (buffer-file-name))))
       (error "Current file is not tracked and pcmm-commit-all is not enabled!"))
-  (cond ((and (= 0 (length (magit-untracked-files)))
-              (= 0 (length (magit-unstaged-files))))
+  (cond ((and (= 0 (length (magit-unstaged-files)))
+              (or (not pcmm-commit-all)
+                  (= 0 (length (magit-untracked-files)))))
          (message "There are no changes to commit."))
         (t
          (if (or force (pcmm--commit-overdue-p))
