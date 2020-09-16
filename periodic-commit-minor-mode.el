@@ -157,8 +157,8 @@ visiting a file that is within a Git repository and this function has
 never been called before, or it was last called longer than
 `pcmm-commit-frequency' seconds ago.
 
-If FORCE is not nil, a commit will be made and the interval time will
-be refreshed no matter what."
+If FORCE is not nil, a commit will be made (if there are changes to
+commit) and the interval time will be refreshed no matter what."
   (interactive)
   (if (not (buffer-file-name))
       (error "Periodic Commit cannot commit a file with no filename!"))
@@ -172,8 +172,15 @@ be refreshed no matter what."
         (t
          (if (or force (pcmm--commit-overdue-p))
              (progn
-               (magit-stage-modified pcmm-commit-all)
-               (vc-git-command nil 0 nil "commit" "-m" (pcmm--make-commit-message))
+               (if pcmm-commit-all
+                   (vc-git-command nil 0
+                                   ;; Workaround for https://debbugs.gnu.org/16897
+                                   ;; Force `vc-git-command' to accept the root dir
+                                   ;; as a file arg by passing a list with harmless
+                                   ;; current dir element.
+                                   (list (vc-git-root (buffer-file-name)) ".")
+                                   "add"))
+               (vc-git-command nil 0 nil "commit" "-am" (pcmm--make-commit-message))
                (pcmm--update-log)
                (message "Automatically committed.")
                t)))))
