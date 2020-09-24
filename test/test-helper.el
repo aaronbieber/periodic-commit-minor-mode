@@ -45,20 +45,33 @@
 
 This macro ensures that the directory created is always destroyed,
 even if FORMS results in errors."
-  `(unwind-protect
-       (let* ((pcmmt-dir (pcmmt-create-proj ,name ,init))
-              (pcmmt-file (expand-file-name (concat ,name "-file.txt") pcmmt-dir))
-              (pcmmt-metafile (expand-file-name ".pcmm" pcmmt-dir)))
-         ,@forms
-         pcmmt-dir)
-     (pcmmt-delete-proj ,name)))
+  (let ((unique-name (concat name "-" (random-string))))
+    `(unwind-protect
+         (let* (
+                (pcmmt-dir (pcmmt-create-proj ,unique-name ,init))
+                (pcmmt-file (expand-file-name (concat ,unique-name "-file.txt") pcmmt-dir))
+                (pcmmt-metafile (expand-file-name ".pcmm" pcmmt-dir)))
+           ,@forms
+           pcmmt-dir)
+       (pcmmt-delete-proj ,unique-name))))
 
 (defun forge-log (filename offset)
   "Write the current time plus OFFSET to FILENAME."
   (let* ((current-time (string-to-number (format-time-string "%s")))
-         (offset-time (+ current-time offset))
-         (buf (get-buffer-create "*test*")))
+         (offset-time (+ current-time offset)))
     (write-region (number-to-string offset-time) nil filename)))
+
+(defun random-char ()
+  (let* ((alnum "abcdefghijklmnopqrstuvwxyz0123456789")
+         (i (% (abs (random)) (length alnum))))
+    (substring alnum i (1+ i))))
+
+(defun random-string ()
+  (concat (random-char)
+          (random-char)
+          (random-char)
+          (random-char)
+          (random-char)))
 
 (provide 'test-helper)
 ;;; test-helper.el ends here
